@@ -1182,7 +1182,8 @@ class Bot(_BotBase):
                                            'inline_query',
                                            'chosen_inline_result',
                                            'shipping_query',
-                                           'pre_checkout_query'])
+                                           'pre_checkout_query',
+                                           'chat_member_updated'])
             collect_queue.put(update[key])
             return update['update_id']
 
