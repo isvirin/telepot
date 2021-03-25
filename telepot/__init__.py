@@ -34,6 +34,7 @@ def flavor(msg):
     - ``chosen_inline_result``
     - ``shipping_query``
     - ``pre_checkout_query``
+    - ``char_member_updated``
 
     An event's flavor is determined by the single top-level key.
     """
@@ -49,6 +50,8 @@ def flavor(msg):
         return 'shipping_query'
     elif 'id' in msg and 'total_amount' in msg:
         return 'pre_checkout_query'
+    elif 'old_chat_member' in msg:
+        return 'chat_member_updated'
     else:
         top_keys = list(msg.keys())
         if len(top_keys) == 1:
@@ -119,6 +122,9 @@ def glance(msg, flavor='chat', long=False):
 
     - short: (``msg['id']``, ``msg['from']['id']``, ``msg['invoice_payload']``)
     - long: (``msg['id']``, ``msg['from']['id']``, ``msg['invoice_payload']``, ``msg['currency']``, ``msg['total_amount']``)
+
+    When ``flavor`` is ``chat_member_updated``
+    (``msg`` being a `ChatMemberUpdated <https://core.telegram.org/bots/api#chatmemberupdated>`_ object):
     """
     def gl_chat():
         content_type = _find_first_key(msg, all_content_types)
@@ -149,13 +155,20 @@ def glance(msg, flavor='chat', long=False):
         else:
             return msg['id'], msg['from']['id'], msg['invoice_payload']
 
+    def gl_chat_member_updated():
+        if long:
+            return msg['chat']['type'], msg['chat']['id']
+        else:
+            return msg['chat']['type'], msg['chat']['id'], msg['old_chat_member']['user']['id']
+
     try:
         fn = {'chat': gl_chat,
               'callback_query': gl_callback_query,
               'inline_query': gl_inline_query,
               'chosen_inline_result': gl_chosen_inline_result,
               'shipping_query': gl_shipping_query,
-              'pre_checkout_query': gl_pre_checkout_query}[flavor]
+              'pre_checkout_query': gl_pre_checkout_query,
+              'chat_member_updated': gl_chat_member_updated}[flavor]
     except KeyError:
         raise exception.BadFlavor(flavor)
 
