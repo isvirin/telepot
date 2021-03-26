@@ -252,6 +252,7 @@ class DefaultRouterMixin(object):
                                        'chosen_inline_result': _create_invoker(self, 'on_chosen_inline_result'),
                                        'shipping_query': _create_invoker(self, 'on_shipping_query'),
                                        'pre_checkout_query': _create_invoker(self, 'on_pre_checkout_query'),
+                                       'chat_memeber_updated': _create_invoker(self, 'on_chat_member_updated'),
                                        '_idle': _create_invoker(self, 'on__idle')})
 
         super(DefaultRouterMixin, self).__init__(*args, **kwargs)
